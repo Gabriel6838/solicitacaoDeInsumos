@@ -1,3 +1,4 @@
+// scripts/adicionarLinha.js
 import { insumos } from './insumos.js';
 
 export function adicionarLinha() {
@@ -13,9 +14,9 @@ export function adicionarLinha() {
       <input type="hidden" class="tipo-hidden">
       <ul class="dropdown"></ul>
     </td>
-    <td><input type="number" class="qtd-input" min="0" style="width:100%;"></td>
+    <td><input type="number" class="qtd-input" min="0"></td>
     <td><input type="text" class="unid-display" disabled></td>
-    <!-- Categoria não aparece na tela -->
+    <td style="display:none;"><input type="text" class="tipo-display" disabled></td>
   `;
 
   tabela.appendChild(tr);
@@ -25,11 +26,13 @@ export function adicionarLinha() {
   const unidHidden = tr.querySelector('.unid-hidden');
   const tipoHidden = tr.querySelector('.tipo-hidden');
   const unidDisplay = tr.querySelector('.unid-display');
+  const tipoDisplay = tr.querySelector('.tipo-display');
 
   function atualizarDropdown() {
     dropdown.innerHTML = '';
     const texto = input.value.trim().toLowerCase();
 
+    // produtos já selecionados (para não mostrar na lista)
     const escolhidos = Array.from(document.querySelectorAll('#tabela .prod-search'))
       .filter(el => el !== input)
       .map(el => el.value.trim().toLowerCase())
@@ -37,7 +40,7 @@ export function adicionarLinha() {
 
     const filtrados = insumos.filter(i => {
       const nome = i.produto.toLowerCase();
-      if (texto && !nome.includes(nome)) return false;
+      if (texto && !nome.includes(texto)) return false;
       if (escolhidos.includes(nome)) return false;
       return true;
     });
@@ -50,21 +53,32 @@ export function adicionarLinha() {
     filtrados.forEach(item => {
       const li = document.createElement('li');
       li.textContent = item.produto;
-      li.addEventListener('mousedown', (ev) => {
-        ev.preventDefault();
+      li.style.padding = '5px';
+      li.style.cursor = 'pointer';
+
+      // ao clicar em um item
+      li.addEventListener('mousedown', ev => {
+        ev.preventDefault(); // evita blur antes do mousedown
         input.value = item.produto;
         unidHidden.value = item.unid;
         tipoHidden.value = item.tipo;
         unidDisplay.value = item.unid;
-        // Dropdown desaparece imediatamente
-        dropdown.style.display = 'none';
-        input.dispatchEvent(new Event('input', { bubbles: true }));
+        tipoDisplay.value = item.tipo;
+        dropdown.style.display = 'none'; // a lista some imediatamente
+        input.dispatchEvent(new Event('input', { bubbles: true })); // dispara evento para salvar
       });
+
       dropdown.appendChild(li);
     });
+
     dropdown.style.display = 'block';
   }
 
   input.addEventListener('input', atualizarDropdown);
-  input.addEventListener('blur', () => setTimeout(() => dropdown.style.display = 'none', 200));
+
+  // fecha a lista se clicar fora do input
+  input.addEventListener('blur', () => setTimeout(() => {
+    dropdown.style.display = 'none';
+  }, 200));
 }
+
