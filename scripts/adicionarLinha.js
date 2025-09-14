@@ -6,7 +6,6 @@ export function adicionarLinha() {
   if (!tabela) return;
 
   const tr = document.createElement('tr');
-
   tr.innerHTML = `
     <td style="position:relative;">
       <input type="text" class="prod-search" placeholder="Digite para buscar..." autocomplete="off">
@@ -32,7 +31,6 @@ export function adicionarLinha() {
     dropdown.innerHTML = '';
     const texto = input.value.trim().toLowerCase();
 
-    // produtos já selecionados (para não mostrar na lista)
     const escolhidos = Array.from(document.querySelectorAll('#tabela .prod-search'))
       .filter(el => el !== input)
       .map(el => el.value.trim().toLowerCase())
@@ -40,9 +38,7 @@ export function adicionarLinha() {
 
     const filtrados = insumos.filter(i => {
       const nome = i.produto.toLowerCase();
-      if (texto && !nome.includes(texto)) return false;
-      if (escolhidos.includes(nome)) return false;
-      return true;
+      return (!texto || nome.includes(texto)) && !escolhidos.includes(nome);
     });
 
     if (filtrados.length === 0) {
@@ -53,10 +49,8 @@ export function adicionarLinha() {
     filtrados.forEach(item => {
       const li = document.createElement('li');
       li.textContent = item.produto;
-      li.style.padding = '5px';
-      li.style.cursor = 'pointer';
 
-      // ao clicar em um item
+      // Aqui é que sumirá imediatamente ao clicar
       li.addEventListener('mousedown', ev => {
         ev.preventDefault(); // evita blur antes do mousedown
         input.value = item.produto;
@@ -64,8 +58,13 @@ export function adicionarLinha() {
         tipoHidden.value = item.tipo;
         unidDisplay.value = item.unid;
         tipoDisplay.value = item.tipo;
-        dropdown.style.display = 'none'; // a lista some imediatamente
-        input.dispatchEvent(new Event('input', { bubbles: true })); // dispara evento para salvar
+
+        // ✅ força desaparecer imediatamente
+        dropdown.style.display = 'none';
+
+        // remove todos os listeners pendentes para blur que possam reabrir
+        input.blur();
+        input.dispatchEvent(new Event('input', { bubbles: true }));
       });
 
       dropdown.appendChild(li);
@@ -76,9 +75,7 @@ export function adicionarLinha() {
 
   input.addEventListener('input', atualizarDropdown);
 
-  // fecha a lista se clicar fora do input
-  input.addEventListener('blur', () => setTimeout(() => {
-    dropdown.style.display = 'none';
-  }, 200));
+  // mantém um timeout curto para desaparecer quando sair do input
+  input.addEventListener('blur', () => setTimeout(() => dropdown.style.display = 'none', 100));
 }
 
