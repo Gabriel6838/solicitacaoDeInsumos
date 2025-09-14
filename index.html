@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista Para Solicitação de Insumos</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .botoes { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+    .forno-select { display: flex; align-items: center; gap: 5px; }
+    .forno-select select { height: 30px; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    td, th { padding: 5px; border: 1px solid #ccc; }
+    input[type="number"] { width: 70px; }
+    td { position: relative; } /* necessário para dropdown */
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: none;
+      z-index: 10;
+    }
+    .dropdown li {
+      padding: 5px;
+      cursor: pointer;
+    }
+    .dropdown li:hover {
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>SOLICITAÇÃO DE INSUMOS</h1>
+
+<div class="botoes">
+  <button id="addLinhaBtn" type="button">➕ Adicionar Linha</button>
+  <button id="limparLinhaBtn" type="button">🔄 Reiniciar Tabela</button>
+  <button id="gerarPdfBtn" type="button">📄 Gerar PDF</button>
+  <div class="forno-select">
+    <label for="fornoNome"></label>
+    <select id="fornoNome">
+      <option value="Selecione">Selecione</option>
+      <option value="Dom">Forno Dom</option>
+      <option value="Leste">Forno Leste</option>
+      <option value="Dirceu">Forno Dirceu</option>
+      <option value="Sul">Forno Sul</option>
+    </select>
+  </div>
+</div>
+
+<h2>Itens</h2>
+<table id="tabela">
+  <thead>
+    <tr>
+      <th>DESCRIÇÃO</th>
+      <th>QTD.</th>
+      <th>UNID.</th>
+      <th>CATEGORIA</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h2>Sobras de Porcionados</h2>
+<table id="tabelaFixos">
+  <thead>
+    <tr>
+      <th>DESCRIÇÃO</th>
+      <th>QTD.</th>
+      <th>UNID.</th>
+      <th>CATEGORIA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>QUEIJO MUSSARELA G</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>QUEIJO MUSSARELA M</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>QUEIJO MUSSARELA P</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>CARNE DE SOL G</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>CARNE DE SOL M</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>FILÉ MIGNON G</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>FILÉ MIGNON M</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>CALABRESA G</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>CALABRESA M</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>BACON G</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>BACON M</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>FRANGO DESFIADO G</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>FRANGO DESFIADO M</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>PEPERONI G</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+    <tr><td>PEPERONI M</td><td><input type="number" class="qtd-input" min="0"></td><td>UN</td><td>Porcionados</td></tr>
+  </tbody>
+</table>
+
+<script type="module" src="scripts/main.js"></script>
+</body>
+</html>
