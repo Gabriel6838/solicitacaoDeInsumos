@@ -1,4 +1,3 @@
-// scripts/adicionarLinha.js
 import { insumos } from './insumos.js';
 
 export function adicionarLinha() {
@@ -14,9 +13,9 @@ export function adicionarLinha() {
       <input type="hidden" class="tipo-hidden">
       <ul class="dropdown"></ul>
     </td>
-    <td><input type="number" class="qtd-input" min="0"></td>
+    <td><input type="number" class="qtd-input" min="0" style="width:100%;"></td>
     <td><input type="text" class="unid-display" disabled></td>
-    <td><input type="text" class="tipo-display" disabled></td>
+    <!-- Categoria não aparece na tela -->
   `;
 
   tabela.appendChild(tr);
@@ -26,13 +25,11 @@ export function adicionarLinha() {
   const unidHidden = tr.querySelector('.unid-hidden');
   const tipoHidden = tr.querySelector('.tipo-hidden');
   const unidDisplay = tr.querySelector('.unid-display');
-  const tipoDisplay = tr.querySelector('.tipo-display');
 
   function atualizarDropdown() {
     dropdown.innerHTML = '';
     const texto = input.value.trim().toLowerCase();
 
-    // Itens já escolhidos
     const escolhidos = Array.from(document.querySelectorAll('#tabela .prod-search'))
       .filter(el => el !== input)
       .map(el => el.value.trim().toLowerCase())
@@ -40,7 +37,7 @@ export function adicionarLinha() {
 
     const filtrados = insumos.filter(i => {
       const nome = i.produto.toLowerCase();
-      if (texto && !nome.includes(texto)) return false;
+      if (texto && !nome.includes(nome)) return false;
       if (escolhidos.includes(nome)) return false;
       return true;
     });
@@ -50,40 +47,24 @@ export function adicionarLinha() {
       return;
     }
 
-    for (const item of filtrados) {
+    filtrados.forEach(item => {
       const li = document.createElement('li');
       li.textContent = item.produto;
-
-      li.addEventListener('click', () => {
+      li.addEventListener('mousedown', (ev) => {
+        ev.preventDefault();
         input.value = item.produto;
         unidHidden.value = item.unid;
         tipoHidden.value = item.tipo;
         unidDisplay.value = item.unid;
-        tipoDisplay.value = item.tipo;
-
-        // >>> FECHAR LISTA IMEDIATAMENTE <<<
-        dropdown.innerHTML = '';
+        // Dropdown desaparece imediatamente
         dropdown.style.display = 'none';
-
-        // dispara evento para salvar no localStorage
         input.dispatchEvent(new Event('input', { bubbles: true }));
       });
-
       dropdown.appendChild(li);
-    }
-
+    });
     dropdown.style.display = 'block';
   }
 
   input.addEventListener('input', atualizarDropdown);
-
-  // só esconde ao sair, SE não escolher nada
-  input.addEventListener('blur', () => {
-    setTimeout(() => {
-      if (!dropdown.contains(document.activeElement)) {
-        dropdown.innerHTML = '';
-        dropdown.style.display = 'none';
-      }
-    }, 150);
-  });
+  input.addEventListener('blur', () => setTimeout(() => dropdown.style.display = 'none', 200));
 }
