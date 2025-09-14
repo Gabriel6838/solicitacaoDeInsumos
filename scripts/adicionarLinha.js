@@ -17,7 +17,6 @@ export function adicionarLinha() {
     <td><input type="text" class="unid-display" disabled></td>
     <td style="display:none;"><input type="text" class="tipo-display" disabled></td>
   `;
-
   tabela.appendChild(tr);
 
   const input = tr.querySelector('.prod-search');
@@ -31,6 +30,7 @@ export function adicionarLinha() {
     dropdown.innerHTML = '';
     const texto = input.value.trim().toLowerCase();
 
+    // itens já selecionados
     const escolhidos = Array.from(document.querySelectorAll('#tabela .prod-search'))
       .filter(el => el !== input)
       .map(el => el.value.trim().toLowerCase())
@@ -38,7 +38,9 @@ export function adicionarLinha() {
 
     const filtrados = insumos.filter(i => {
       const nome = i.produto.toLowerCase();
-      return (!texto || nome.includes(texto)) && !escolhidos.includes(nome);
+      if (texto && !nome.includes(texto)) return false;
+      if (escolhidos.includes(nome)) return false;
+      return true;
     });
 
     if (filtrados.length === 0) {
@@ -46,36 +48,36 @@ export function adicionarLinha() {
       return;
     }
 
-    filtrados.forEach(item => {
+    for (const item of filtrados) {
       const li = document.createElement('li');
       li.textContent = item.produto;
 
-      // Aqui é que sumirá imediatamente ao clicar
-      li.addEventListener('mousedown', ev => {
-        ev.preventDefault(); // evita blur antes do mousedown
+      // clique do item
+      li.addEventListener('click', () => {
         input.value = item.produto;
         unidHidden.value = item.unid;
         tipoHidden.value = item.tipo;
         unidDisplay.value = item.unid;
         tipoDisplay.value = item.tipo;
 
-        // ✅ força desaparecer imediatamente
+        // esconder imediatamente a lista
         dropdown.style.display = 'none';
+        dropdown.innerHTML = '';
 
-        // remove todos os listeners pendentes para blur que possam reabrir
-        input.blur();
+        // disparar input para salvar no localStorage
         input.dispatchEvent(new Event('input', { bubbles: true }));
       });
 
       dropdown.appendChild(li);
-    });
-
+    }
     dropdown.style.display = 'block';
   }
 
   input.addEventListener('input', atualizarDropdown);
 
-  // mantém um timeout curto para desaparecer quando sair do input
-  input.addEventListener('blur', () => setTimeout(() => dropdown.style.display = 'none', 100));
+  // blur opcional, apenas para clicar fora
+  input.addEventListener('blur', () => {
+    setTimeout(() => dropdown.style.display = 'none', 150);
+  });
 }
 
