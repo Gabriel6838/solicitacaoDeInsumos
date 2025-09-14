@@ -1,6 +1,7 @@
+// scripts/localStorage.js
 import { adicionarLinha } from './adicionarLinha.js';
 
-// Salvar tabela custom
+// Salvar tabela custom (incluindo categoria)
 export function salvarTabelaCustom() {
   const dados = [];
   document.querySelectorAll('#tabela tbody tr').forEach(tr => {
@@ -13,13 +14,14 @@ export function salvarTabelaCustom() {
   localStorage.setItem('tabelaInsumos', JSON.stringify(dados));
 }
 
-// Salvar tabela fixos
+// Salvar tabela fixos (categoria sempre "Porcionados")
 export function salvarTabelaFixos() {
   const dados = [];
   document.querySelectorAll('#tabelaFixos tbody tr').forEach(tr => {
     const qtd = tr.querySelector('input.qtd-input')?.value || '';
     const desc = tr.cells[0]?.textContent || '';
-    dados.push({ desc, qtd });
+    const tipo = 'Porcionados';
+    dados.push({ desc, qtd, tipo });
   });
   localStorage.setItem('tabelaFixos', JSON.stringify(dados));
 }
@@ -58,4 +60,5 @@ document.addEventListener('input', () => {
 
 // Carregar ao iniciar
 window.addEventListener('load', carregarTabelas);
+
 
